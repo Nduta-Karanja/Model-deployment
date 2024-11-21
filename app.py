@@ -3,7 +3,6 @@ import joblib
 import numpy as np
 import pandas as pd
 import json
-import os
 
 # Helper function to load files with error handling
 def load_file(file_path):
@@ -16,18 +15,14 @@ def load_file(file_path):
         st.error(f"Error loading {file_path}: {e}")
         st.stop()
 
-# Safely load each required file
-try:
-    mlp = load_file('models/mlp_model.pkl')
-    kmeans = load_file('models/kmeans_model.pkl')
-    income_encoder = load_file('models/income_encoder.pkl')
-    grid_encoder = load_file('models/grid_encoder.pkl')
-    scaler = load_file('models/scaler.pkl')
-except Exception as e:
-    st.error(f"Error initializing models or encoders: {e}")
-    st.stop()
+# Load models and utilities
+mlp = load_file('models/mlp_model.pkl')
+kmeans = load_file('models/kmeans_model.pkl')
+income_encoder = load_file('models/income_encoder.pkl')
+grid_encoder = load_file('models/grid_encoder.pkl')
+scaler = load_file('models/scaler.pkl')
 
-# Load metadata file with error handling
+# Load metadata
 try:
     with open('metadata.json', 'r') as f:
         metadata = json.load(f)
@@ -38,7 +33,7 @@ except json.JSONDecodeError:
     st.error("Error decoding 'metadata.json'. Ensure it is a valid JSON file.")
     st.stop()
 
-# Extract metadata keys
+# Extract metadata
 features_to_scale = metadata.get('features_to_scale', [])
 viability_map = metadata.get('viability_map', {})
 
@@ -85,8 +80,16 @@ if st.button("Predict"):
         viability_prediction = mlp.predict(final_features)[0]
         viability_label = viability_map.get(str(viability_prediction), "Unknown")
 
+        # Add prediction results to the DataFrame
+        input_data['Predicted_Viability'] = viability_label
+
         # Display results
         st.subheader("Prediction Result")
         st.write(f"**Viability:** {viability_label}")
+
+        # Display results on a map
+        st.subheader("Location on Map")
+        st.map(input_data[['Latitude', 'Longitude']])
+
     except Exception as e:
         st.error(f"An error occurred during prediction: {e}")
