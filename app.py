@@ -5,25 +5,29 @@ import pandas as pd
 import json
 import os
 
-# Load models and utilities
+# Helper function to load files with error handling
 def load_file(file_path):
     try:
         return joblib.load(file_path)
     except FileNotFoundError:
-        st.error(f"File not found: {file_path}")
+        st.error(f"File not found: {file_path}. Ensure the file is in the correct directory.")
         st.stop()
     except Exception as e:
         st.error(f"Error loading {file_path}: {e}")
         st.stop()
 
 # Safely load each required file
-mlp = load_file('models/mlp_model.pkl')
-kmeans = load_file('models/kmeans_model.pkl')
-income_encoder = load_file('models/income_encoder.pkl')
-grid_encoder = load_file('models/grid_encoder.pkl')
-scaler = load_file('models/scaler.pkl')
+try:
+    mlp = load_file('models/mlp_model.pkl')
+    kmeans = load_file('models/kmeans_model.pkl')
+    income_encoder = load_file('models/income_encoder.pkl')
+    grid_encoder = load_file('models/grid_encoder.pkl')
+    scaler = load_file('models/scaler.pkl')
+except Exception as e:
+    st.error(f"Error initializing models or encoders: {e}")
+    st.stop()
 
-# Load metadata file
+# Load metadata file with error handling
 try:
     with open('metadata.json', 'r') as f:
         metadata = json.load(f)
@@ -79,10 +83,4 @@ if st.button("Predict"):
 
         # Predict with MLP
         viability_prediction = mlp.predict(final_features)[0]
-        viability_label = viability_map.get(str(viability_prediction), "Unknown")
-
-        # Display results
-        st.subheader("Prediction Result")
-        st.write(f"**Viability:** {viability_label}")
-    except Exception as e:
-        st.error(f"An error occurred during prediction: {e}")
+        viability_label = viability_map.get(str(viability_prediction), "Unk
