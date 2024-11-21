@@ -83,4 +83,10 @@ if st.button("Predict"):
 
         # Predict with MLP
         viability_prediction = mlp.predict(final_features)[0]
-        viability_label = viability_map.get(str(viability_prediction), "Unk
+        viability_label = viability_map.get(str(viability_prediction), "Unknown")
+
+        # Display results
+        st.subheader("Prediction Result")
+        st.write(f"**Viability:** {viability_label}")
+    except Exception as e:
+        st.error(f"An error occurred during prediction: {e}")
