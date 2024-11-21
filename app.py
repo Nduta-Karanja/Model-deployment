@@ -5,11 +5,11 @@ import pandas as pd
 import json
 
 # Load models and utilities
-mlp = joblib.load('mlp_model.pkl')
-kmeans = joblib.load('kmeans_model.pkl')
-income_encoder = joblib.load('income_encoder.pkl')
-grid_encoder = joblib.load('grid_encoder.pkl')
-scaler = joblib.load('scaler.pkl')
+mlp = joblib.load('models/mlp_model.pkl')
+kmeans = joblib.load('models/kmeans_model.pkl')
+income_encoder = joblib.load('models/income_encoder.pkl')
+grid_encoder = joblib.load('models/grid_encoder.pkl')
+scaler = joblib.load('models/scaler.pkl')
 
 # Load metadata
 with open('metadata.json', 'r') as f:
